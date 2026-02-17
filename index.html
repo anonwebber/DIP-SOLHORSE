@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$DIP - The Endless Dip</title>
+  <meta name="description" content="SOL Horse never stops dipping. $DIP on Solana.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F40E;</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0a; font-family: 'VT323', monospace; overflow-x: hidden; }
+    .header { text-align: center; padding: 30px 20px 10px; }
+    .ticker { font-family: 'Press Start 2P', monospace; font-size: clamp(1.8rem, 5vw, 3rem); color: #ff3131; text-shadow: 0 0 20px rgba(255,49,49,0.5); letter-spacing: 4px; }
+    .subtitle { font-size: 1.4rem; color: #666; margin-top: 8px; letter-spacing: 2px; }
+    .subtitle b { color: #9945FF; }
+    .price { color: #ff3131; font-family: 'Press Start 2P', monospace; font-size: clamp(0.55rem, 1.5vw, 0.8rem); margin-top: 15px; }
+    .price b { color: #9945FF; }
+    h1 { text-align: center; font-family: 'VT323', monospace; font-size: clamp(1rem, 2.5vw, 1.6rem); color: #e0e0e0; letter-spacing: 3px; padding: 15px 20px 5px; word-break: break-all; opacity: 0.6; }
+    .centered { width: 420px; max-width: 95vw; margin: 0 auto; position: relative; }
+    #horse { font-family: 'Courier New', 'Lucida Console', monospace; font-size: clamp(8px, 1.2vw, 14px); line-height: 1.18; color: #d4d4d4; }
+    .d { color: #ff3131; font-weight: bold; }
+
+    /* Glitch SOL - positioned inside horse belly */
+    .sol-glitch {
+      position: absolute;
+      top: calc(10 * clamp(8px, 1.2vw, 14px));
+      left: calc(15 * clamp(8px, 1.2vw, 14px));
+      transform: translate(-50%, -50%);
+      font-family: 'Press Start 2P', monospace;
+      font-size: calc(3 * clamp(8px, 1.2vw, 14px));
+      color: #9945FF;
+      letter-spacing: 4px;
+      pointer-events: none;
+      z-index: 10;
+      animation: glitch-main 4s infinite;
+    }
+    .sol-glitch::before,
+    .sol-glitch::after {
+      content: 'SOL';
+      position: absolute;
+      top: 0; left: 0;
+    }
+    .sol-glitch::before {
+      color: #14F195;
+      animation: glitch-top 3s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+    }
+    .sol-glitch::after {
+      color: #ff3131;
+      animation: glitch-bot 2.5s infinite;
+      clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+    }
+    @keyframes glitch-main {
+      0%, 92%, 100% { text-shadow: 0 0 15px rgba(153,69,255,0.4); }
+      93% { transform: translate(-50%, -50%) skew(-2deg); text-shadow: 3px 0 #14F195, -3px 0 #ff3131; }
+      94% { transform: translate(-50%, -50%) skew(1deg); }
+      95% { transform: translate(-50%, -50%); text-shadow: 0 0 15px rgba(153,69,255,0.4); }
+      96% { transform: translate(-50%, -50%) skew(-1deg); text-shadow: -2px 0 #14F195, 2px 0 #ff3131; }
+      97% { transform: translate(-50%, -50%); }
+    }
+    @keyframes glitch-top {
+      0%, 90%, 100% { transform: translate(0); opacity: 0; }
+      91% { transform: translate(-4px, -2px); opacity: 0.8; }
+      92% { transform: translate(3px, 1px); opacity: 0.6; }
+      93% { transform: translate(-2px, -1px); opacity: 0.7; }
+      94% { transform: translate(0); opacity: 0; }
+      96% { transform: translate(5px, -1px); opacity: 0.8; }
+      97% { transform: translate(-3px, 2px); opacity: 0.5; }
+      98% { transform: translate(0); opacity: 0; }
+    }
+    @keyframes glitch-bot {
+      0%, 88%, 100% { transform: translate(0); opacity: 0; }
+      89% { transform: translate(3px, 2px); opacity: 0.7; }
+      90% { transform: translate(-4px, -1px); opacity: 0.8; }
+      91% { transform: translate(2px, 1px); opacity: 0.6; }
+      92% { transform: translate(0); opacity: 0; }
+      94% { transform: translate(-3px, 1px); opacity: 0.7; }
+      95% { transform: translate(4px, -2px); opacity: 0.8; }
+      96% { transform: translate(0); opacity: 0; }
+    }
+
+    .dip-counter { position: fixed; bottom: 20px; right: 20px; font-family: 'Press Start 2P', monospace; font-size: 0.55rem; color: #ff3131; background: rgba(10,10,10,0.95); border: 1px solid #333; padding: 10px 15px; z-index: 100; text-align: right; line-height: 2; }
+    .dip-counter .label { color: #555; }
+    .buy-btn { position: fixed; bottom: 20px; left: 20px; font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #0a0a0a; background: #14F195; border: none; padding: 12px 18px; cursor: pointer; z-index: 100; text-transform: uppercase; transition: all 0.2s; }
+    .buy-btn:hover { background: #ff3131; color: #fff; }
+    #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.45; }
+    .header, h1, .centered { position: relative; z-index: 1; }
+  </style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+  <div class="header">
+    <div class="ticker">$DIP</div>
+    <div class="subtitle">the <b>SOL</b> horse that never stops dipping</div>
+    <div class="price"><b>SOL </b><span id="price">$148.50</span> &#x2193;&#x2193;&#x2193;</div>
+  </div>
+  <h1>diiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiip</h1>
+  <div class="centered">
+    <div class="sol-glitch">SOL</div>
+    <pre id="horse">   ,
+_,,)\.~,,._
+(()`  ``)\))),,_
+ |     \ ''((\)))),,_          ____
+ |6`   |   ''((\())) "-.____.-"    `-.-,
+ |    .'\    ''))))'                  \)))
+ |   |   `.     ''                     ((((
+ \, _)     \/                          |))))
+  `'        |                          (((((
+            \                  |       ))))))
+             `|    |           ,\     /((((((
+              |   / `-.______.&lt;  \   |  )))))
+              |   |  /         `. \  \  ((((
+              |  / \ |           `.\  | (((
+              \  | | |             )| |  ))
+               | | | |             || |  '
+</pre>
+  </div>
+  <div class="dip-counter">
+    <span class="label">DIP DEPTH</span><br>
+    <span id="depth">0</span> ft<br>
+    <span class="label">STATUS</span><br>
+    <span id="status">DIPPING</span>
+  </div>
+  <button class="buy-btn" onclick="buyDip()">BUY THE DIP</button>
+  <script>
+    const el = document.getElementById('horse');
+    let legCount = 0;
+    const D = '<span class="d">';
+    const E = '</span>';
+    const bothD = '               ' + D+'D'+E + ' | | |             || ' + D+'D'+E + '  \n';
+    const bothI = '               ' + D+'I'+E + ' | | |             || ' + D+'I'+E + '  \n';
+    const bothP = '               ' + D+'P'+E + ' | | |             || ' + D+'P'+E + '  \n';
+    const legN  = '               | | | |             || |  \n';
+    const cycle = [bothD, bothI, bothP, legN, legN, legN, legN, legN];
+    function addLegs(n) {
+      let h = '';
+      for (let i = 0; i < n; i++) h += cycle[(legCount + i) % cycle.length];
+      legCount += n;
+      el.insertAdjacentHTML('beforeend', h);
+    }
+    addLegs(80);
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2000) addLegs(50);
+          updateCounter();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    const depthEl = document.getElementById('depth');
+    const statusEl = document.getElementById('status');
+    const statuses = [
+      'DIPPING','STILL DIPPING','DIP HARDER','MEGA DIP','ULTRA DIP',
+      'GIGA DIP','WHY IS IT STILL GOING','COSMIC DIP','INFINITE DIP',
+      'DIP TO THE CORE','BELOW ZERO','HELL DIP','VOID DIP',
+      'DIP BEYOND DIP','MOTHER OF ALL DIPS','THIS IS THE DIP',
+      'IT WASNT THE DIP','KEEP DIPPING SER','DIP OR DIE',
+      'GENERATIONAL DIP','UR STILL HERE?','BOTTOM IS IN (COPIUM)',
+      'SER PLS','DOWN ONLY FOREVER','DIPCEPTION','DIPS WITHIN DIPS',
+      'SOL TO $0 CONFIRMED','MY WIFE LEFT ME','SOLD MY HOUSE FOR THIS',
+      'THIS IS FINE','EVERYTHING IS FINE','NOT FINANCIAL ADVICE',
+      'DO KWON WAS RIGHT','CELSIUS VIBES','FTX 2.0','LUNATIC DIP',
+      'RUGGED AGAIN','CANT RUG IF ALWAYS DIP','200 IQ DIP BUYER',
+      'BOUGHT THE WRONG DIP','SIR THIS IS SOLANA','PHANTOM WALLET CRYING',
+      'JUPITER DOWN BAD','RAYDIUM LIQUIDATED','MARINADE UNSTAKING',
+      'JITO TIPS: $0.00','BONK BUT SADDER','EVEN BONK IS UP',
+      'WIF HAT FELL OFF','POPCAT NOT POPPING','DEGEN SPOTTED',
+      'APE IN? APE DOWN','LEVERAGE LONG AT BOTTOM','LONGED THE TOP',
+      'SHORTED THE BOTTOM JK','3X LONG LIQUIDATED','MARGIN CALL SER',
+      'PORTFOLIO: -99.7%','UNREALIZED GAINS LOL','REALIZED LOSSES THO',
+      'TAX LOSS HARVESTING','IRS CANT TAX LOSSES','TECHNICALLY PROFITABLE',
+      'IN SOL TERMS IM UP','ZOOM OUT (DONT)','THE CHART IS UPSIDE DOWN',
+      'ROTATE THE SCREEN','AUSTRALIA VIEW BULLISH','TRUST THE PROCESS',
+      'DIAMOND HANDS FR FR','PAPER HANDS WERE RIGHT','SHOULD HAVE SOLD',
+      'NEVER SELLING (COPE)','LOCKED AND STAKED','STAKED AND REKT',
+      'VESTING CLIFF = DIP','TOKEN UNLOCK INCOMING','VC DUMP ENGAGED',
+      'TEAM WALLET MOVING','WHALE ALERT: SELL','INSIDER SOLD EVERYTHING',
+      'SMART MONEY LEFT','DUMB MONEY STAYED','WE ARE DUMB MONEY',
+      'NGMI','WAGMI (LYING)','HFSP','LFG (DOWN)','GM (ITS NOT)',
+      'GN (FOREVER)','PROBABLY NOTHING','DEFINITELY SOMETHING BAD',
+      'FUD? NO JUST FACTS','COPE HARDER','SEETHE MORE','MALD LEVEL: MAX',
+      'TOUCHING GRASS NOW','GRASS IS ALSO DOWN','EVEN BITCOIN LAUGHING',
+      'ETH MAXIS POINTING','BTC MAXIS SMIRKING','COSMOS VIBES',
+      'AT LEAST ITS NOT TERRA','WORSE THAN TERRA?','BITCONNECT TIER',
+      'HEY HEY HEYYY','WASU WASU WASU','THE WORLD IS NOT ANYMORE',
+      'FINANCIALLY INDEPENDENTLY','INDEPENDENTLY BROKE',
+      'MOM PICK ME UP','DAD WENT FOR MILK','GRANDMA SOLD THE TOP',
+      'DOG ATE MY SEED PHRASE','SEED PHRASE ON A NAPKIN','LEDGER IN THE RIVER',
+      'COLD WALLET COLD HEART','HOT WALLET HOTTER LOSSES',
+    ];
+    function updateCounter() {
+      const d = Math.floor(window.scrollY / 8);
+      depthEl.textContent = d.toLocaleString();
+      statusEl.textContent = statuses[Math.floor(d / 100) % statuses.length];
+    }
+    const priceEl = document.getElementById('price');
+    let p = 148.50;
+    function tick() {
+      p = Math.max(0.01, p - (Math.random() * 3 + 0.05));
+      priceEl.textContent = '$' + p.toFixed(2);
+      if (p <= 0.01) p = 148.50;
+      setTimeout(tick, 600 + Math.random() * 1400);
+    }
+    tick();
+    // Matrix rain with $DIP
+    const cv = document.getElementById('matrix');
+    const cx = cv.getContext('2d');
+    const bgChars = ['↓','◎','⬇','₿','·','˙','▪'];
+    const dipWord = ['$','D','I','P'];
+    let cols, drops, types;
+    function initMatrix() {
+      cv.width = window.innerWidth;
+      cv.height = window.innerHeight;
+      const sz = 14;
+      cols = Math.floor(cv.width / sz);
+      drops = Array.from({length: cols}, () => Math.random() * -100 | 0);
+      types = Array.from({length: cols}, () => Math.random() < 0.3 ? 'dip' : 'bg');
+    }
+    initMatrix();
+    window.addEventListener('resize', initMatrix);
+    function drawMatrix() {
+      cx.fillStyle = 'rgba(10,10,10,0.05)';
+      cx.fillRect(0, 0, cv.width, cv.height);
+      for (let i = 0; i < cols; i++) {
+        if (types[i] === 'dip') {
+          const ch = dipWord[Math.abs(drops[i]) % 4];
+          cx.font = 'bold 15px monospace';
+          cx.fillStyle = '#ff3131';
+          cx.shadowColor = '#ff3131';
+          cx.shadowBlur = 8;
+        } else {
+          const ch_bg = bgChars[Math.random() * bgChars.length | 0];
+          cx.font = '14px monospace';
+          cx.fillStyle = '#9945FF';
+          cx.shadowColor = 'transparent';
+          cx.shadowBlur = 0;
+        }
+        const ch = types[i] === 'dip' ? dipWord[Math.abs(drops[i]) % 4] : bgChars[Math.random() * bgChars.length | 0];
+        cx.fillText(ch, i * 14, drops[i] * 14);
+        cx.shadowBlur = 0;
+        if (drops[i] * 14 > cv.height && Math.random() > 0.975) {
+          drops[i] = 0;
+          types[i] = Math.random() < 0.3 ? 'dip' : 'bg';
+        }
+        if (types[i] === 'dip') {
+          if (Math.random() < 0.35) drops[i]++;
+        } else {
+          drops[i]++;
+        }
+      }
+      requestAnimationFrame(drawMatrix);
+    }
+    drawMatrix();
+
+    const msgs = ['LMAO U BOUGHT THE DIP','IT KEEPS DIPPING','SER THIS IS A WENDYS','NGMI','BOUGHT? DUMPED.','THE DIP HAS A DIP','DOWN ONLY','BULLISH (COPIUM)','THIS IS GOOD FOR $DIP','JUST 1 MORE DIP BRO'];
+    let mi = 0;
+    function buyDip() {
+      const b = document.querySelector('.buy-btn');
+      b.textContent = msgs[mi++ % msgs.length];
+      b.style.background = '#ff3131'; b.style.color = '#fff';
+      setTimeout(() => { b.textContent = 'BUY THE DIP'; b.style.background = '#14F195'; b.style.color = '#0a0a0a'; }, 2000);
+    }
+  </script>
+</body>
+</html>
